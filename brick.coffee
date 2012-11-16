@@ -15,7 +15,6 @@ drawStrokedRectangle = (d) ->
                      d.dimensions.width, d.dimensions.height)
     context.strokeRect(d.cords.x+1,d.cords.y+1,
                        d.dimensions.width - 2, d.dimensions.height - 2)
-    
 
 drawArc = (drawable) ->
     context.beginPath()
@@ -24,6 +23,11 @@ drawArc = (drawable) ->
         0, Math.PI*2, true)
     context.fill()
 
+drawMenuLine = (score) ->
+    context.fillStyle = 'rgb(50,100,50)'
+    context.font = '20px Times New Roman'
+    context.clearRect(0, canvas.height-30, canvas.width, 30)
+    context.fillText("Score: #{score}", 10, canvas.height-5)
 #
 # Game world
 #
@@ -62,6 +66,7 @@ for x in [0...bricks_per_row]
   for y in [0...4]
       bricks.push new Brick(new Cords(x,y), brick_width, _.shuffle(['orange', 'red','green'])[0])
 
+score = 0
 
 #
 # Draw world
@@ -70,6 +75,8 @@ for x in [0...bricks_per_row]
 drawFilledRectangle(paddle)
 drawArc(ball)
 drawStrokedRectangle(brick) for brick in bricks
+drawMenuLine(score)
+
 
 
 

@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, Paddle, ball, brick, brick_width, bricks, bricks_per_row, canvas, context, drawArc, drawFilledRectangle, drawStrokedRectangle, paddle, x, y, _i, _j, _k, _len;
+  var Ball, Brick, Cords, Dimensions, Paddle, ball, brick, brick_width, bricks, bricks_per_row, canvas, context, drawArc, drawFilledRectangle, drawMenuLine, drawStrokedRectangle, paddle, score, x, y, _i, _j, _k, _len;
 
   canvas = $('#brick')[0];
 
@@ -19,6 +19,13 @@
     context.beginPath();
     context.arc(drawable.cords.x, drawable.cords.y, drawable.radius, 0, Math.PI * 2, true);
     return context.fill();
+  };
+
+  drawMenuLine = function(score) {
+    context.fillStyle = 'rgb(50,100,50)';
+    context.font = '20px Times New Roman';
+    context.clearRect(0, canvas.height - 30, canvas.width, 30);
+    return context.fillText("Score: " + score, 10, canvas.height - 5);
   };
 
   Cords = (function() {
@@ -99,6 +106,8 @@
     }
   }
 
+  score = 0;
+
   drawFilledRectangle(paddle);
 
   drawArc(ball);
@@ -107,5 +116,7 @@
     brick = bricks[_k];
     drawStrokedRectangle(brick);
   }
+
+  drawMenuLine(score);
 
 }).call(this);
