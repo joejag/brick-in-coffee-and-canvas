@@ -1,5 +1,5 @@
 (function() {
-  var Cords, Dimensions, Paddle, canvas, context, drawRectangle, p;
+  var Ball, Cords, Dimensions, Paddle, b, canvas, context, drawArc, drawRectangle, p;
 
   canvas = $('#brick')[0];
 
@@ -41,12 +41,34 @@
 
   })();
 
-  p = new Paddle;
+  Ball = (function() {
+
+    function Ball() {}
+
+    Ball.prototype.cords = new Cords(300, 300);
+
+    Ball.prototype.radius = 10;
+
+    return Ball;
+
+  })();
 
   drawRectangle = function(drawable) {
     return context.fillRect(drawable.cords.x, drawable.cords.y, drawable.dimensions.width, drawable.dimensions.height);
   };
 
+  drawArc = function(drawable) {
+    context.beginPath();
+    context.arc(drawable.cords.x, drawable.cords.y, drawable.radius, 0, Math.PI * 2, true);
+    return context.fill();
+  };
+
+  p = new Paddle;
+
+  b = new Ball;
+
   drawRectangle(p);
+
+  drawArc(b);
 
 }).call(this);
