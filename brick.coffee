@@ -79,38 +79,45 @@ class Score
     draw: -> drawMenuLine(this)
 
 class GameWorld
+    constructor: ->
+        @paddle = new Paddle
+        @ball = new Ball(this)
+        @score = new Score
+
+        bricks_per_row = 8
+        brick_width = canvas.width/bricks_per_row
+
+        @bricks = []
+        for x in [0...bricks_per_row]
+          for y in [0...4]
+              brick_color = _.shuffle(['orange', 'red','green'])[0]
+              @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
+    
     startGame: ->
-        @gameLoop = setInterval(@animate, 20)
+        setInterval(looper, 20)
 
     endGame: ->
-        clearInterval(@gameLoop)
+        clearInterval(looper)
         drawGameOver()
 
-    animate: ->
+    animate: () ->
         clearScreen()
 
-        ball.move()
+        @ball.move()
 
-        paddle.draw()
-        ball.draw()
-        score.draw()
-        brick.draw() for brick in bricks
+        @paddle.draw()
+        @ball.draw()
+        @score.draw()
+        brick.draw() for brick in @bricks
 
 #
-# Objects
+# Start world
 #
 
 gw = new GameWorld
-bricks_per_row = 8
-brick_width = canvas.width/bricks_per_row
 
-paddle = new Paddle
-ball = new Ball(gw)
-score = new Score
-bricks = []
-for x in [0...bricks_per_row]
-  for y in [0...4]
-      bricks.push new Brick(new Cords(x,y), brick_width, _.shuffle(['orange', 'red','green'])[0])
+looper = ->
+    gw.animate()
 
 gw.startGame()
 

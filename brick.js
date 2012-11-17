@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, ball, brick_width, bricks, bricks_per_row, canvas, clearScreen, context, drawCircle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, paddle, score, x, y, _i, _j;
+  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, looper;
 
   canvas = $('#brick')[0];
 
@@ -138,27 +138,42 @@
 
   GameWorld = (function() {
 
-    function GameWorld() {}
+    function GameWorld() {
+      var brick_color, brick_width, bricks_per_row, x, y, _i, _j;
+      this.paddle = new Paddle;
+      this.ball = new Ball(this);
+      this.score = new Score;
+      bricks_per_row = 8;
+      brick_width = canvas.width / bricks_per_row;
+      this.bricks = [];
+      for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
+        for (y = _j = 0; _j < 4; y = ++_j) {
+          brick_color = _.shuffle(['orange', 'red', 'green'])[0];
+          this.bricks.push(new Brick(new Cords(x, y), brick_width, brick_color));
+        }
+      }
+    }
 
     GameWorld.prototype.startGame = function() {
-      return this.gameLoop = setInterval(this.animate, 20);
+      return setInterval(looper, 20);
     };
 
     GameWorld.prototype.endGame = function() {
-      clearInterval(this.gameLoop);
+      clearInterval(looper);
       return drawGameOver();
     };
 
     GameWorld.prototype.animate = function() {
-      var brick, _i, _len, _results;
+      var brick, _i, _len, _ref, _results;
       clearScreen();
-      ball.move();
-      paddle.draw();
-      ball.draw();
-      score.draw();
+      this.ball.move();
+      this.paddle.draw();
+      this.ball.draw();
+      this.score.draw();
+      _ref = this.bricks;
       _results = [];
-      for (_i = 0, _len = bricks.length; _i < _len; _i++) {
-        brick = bricks[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        brick = _ref[_i];
         _results.push(brick.draw());
       }
       return _results;
@@ -170,23 +185,9 @@
 
   gw = new GameWorld;
 
-  bricks_per_row = 8;
-
-  brick_width = canvas.width / bricks_per_row;
-
-  paddle = new Paddle;
-
-  ball = new Ball(gw);
-
-  score = new Score;
-
-  bricks = [];
-
-  for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
-    for (y = _j = 0; _j < 4; y = ++_j) {
-      bricks.push(new Brick(new Cords(x, y), brick_width, _.shuffle(['orange', 'red', 'green'])[0]));
-    }
-  }
+  looper = function() {
+    return gw.animate();
+  };
 
   gw.startGame();
 
