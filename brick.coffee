@@ -131,12 +131,15 @@ class GameWorld
               brick_color = _.shuffle(['orange', 'red','green'])[0]
               @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
     
+    startGame: ->
+        console.log looper
+        @game_loop = setInterval(looper, 20)
+
     endGame: ->
+        clearInterval(@game_loop)
         drawGameOver()
-        @ended = true
 
     animate: () ->
-        return if @ended
         clearScreen()
 
         @ball.move()
@@ -156,11 +159,7 @@ gw = new GameWorld
 looper = ->
     gw.animate()
 
-setInterval(looper, 20)
-
-end = ->
-    console.log "clearing interval"
-    clearInterval(looper)
+gw.startGame()
 
 
 
