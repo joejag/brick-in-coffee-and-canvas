@@ -86,23 +86,29 @@ class Ball
         @radius = 10
         @delta = new Cords(-2, -4)
     draw: -> drawCircle(this)
+    movement: ->
+        {top: @cords.y + @delta.y - @radius,
+        bottom: @cords.y + @delta.y + @radius,
+        left: @cords.x + @delta.x - @radius,
+        right: @cords.x + @delta.x + @radius}
     move: ->
+        moves = @movement()
         # hits top of screen, move downwards
-        if @cords.y + @delta.y - @radius < 0
+        if moves.top < 0
             @delta.y *= -1
 
         # hits side of wall, reverse X direction
-        if @cords.x + @delta.x - @radius < 0 or @cords.x + @delta.x + @radius > canvas.width
+        if moves.left < 0 or moves.right > canvas.width
             @delta.x *= -1
         
         # hits bottom of screen, then end game
-        if @cords.y + @delta.y + @radius > canvas.height
+        if moves.bottom > canvas.height
             @game_world.endGame()
 
         # hits paddle
         # is inline with paddle Y
         p = @game_world.paddle
-        if @cords.y + @delta.y + @radius >= p.cords.y
+        if moves.bottom >= p.cords.y
             # is positioned within the paddle
             if @cords.x + @delta.x >= p.cords.x and @cords.x + @delta.x <= p.cords.x + p.dimensions.width
                 @delta.y *= -1 if @delta.y > 0
@@ -117,7 +123,8 @@ class Ball
             if (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width) and (@cords.x - @radius >= brick.cords.x + brick.dimensions.width)
                 touching_right = true
             if touching_left or touching_right
-                if (@cords.y + @delta.y - @raidus <= brick.cords.y + brick.dimensions.height) and (@cords.y + @delta.y + @radius >= brick.cords.y)
+                if (@cords.y + @delta.y - @raidus <= brick.cords.y + brick.dimensions.height) and (moves.bottom >= brick.cords.y)
+                    debugger
                     brick.explode()
                     @game_world.score.score += 10
                     @delta.x *= -1
@@ -126,13 +133,12 @@ class Ball
             touching_bottom = false
             touching_top = false
 
-            ball_y_top = @cords.y + @delta.y - @radius
             ball_y_cur_top = @cords.y - @radius
             brick_y_bottom = brick.cords.y + brick.dimensions.height
 
-            if (ball_y_top <= brick_y_bottom) and (ball_y_cur_top >= brick_y_bottom)
+            if (moves.top <= brick_y_bottom) and (ball_y_cur_top >= brick_y_bottom)
                 touching_bottom = true
-            if(@cords.y + @delta.y + @radius >= brick.cords.y) and (@cords.y + @radius <= brick.cords.y)
+            if(moves.bottom >= brick.cords.y) and (@cords.y + @radius <= brick.cords.y)
                 touching_top = true
             if touching_bottom or touching_top
                 if(@cords.x + @delta.x + @radius >= brick.cords.x) and (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width)
