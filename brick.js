@@ -146,7 +146,9 @@
       p = this.game_world.paddle;
       if (this.cords.y + this.delta.y + this.radius >= p.cords.y) {
         if (this.cords.x + this.delta.x >= p.cords.x && this.cords.x + this.delta.x <= p.cords.x + p.dimensions.width) {
-          this.delta.y *= -1;
+          if (this.delta.y > 0) {
+            this.delta.y *= -1;
+          }
         }
       }
       return this.cords = new Cords(this.cords.x + this.delta.x, this.cords.y + this.delta.y);

@@ -102,7 +102,7 @@ class Ball
         if @cords.y + @delta.y + @radius >= p.cords.y
             # is positioned within the paddle
             if @cords.x + @delta.x >= p.cords.x and @cords.x + @delta.x <= p.cords.x + p.dimensions.width
-                @delta.y *= -1
+                @delta.y *= -1 if @delta.y > 0
 
         @cords = new Cords(@cords.x + @delta.x, @cords.y + @delta.y)
 
