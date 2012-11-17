@@ -173,7 +173,7 @@
           if ((this.cords.y + this.delta.y - this.raidus <= brick.cords.y + brick.dimensions.height) && (this.cords.y + this.delta.y + this.radius >= brick.cords.y)) {
             brick.explode();
             this.game_world.score.score += 10;
-            this.delta.y *= -1;
+            this.delta.x *= -1;
             continue;
           }
         }
@@ -192,7 +192,7 @@
           if ((this.cords.x + this.delta.x + this.radius >= brick.cords.x) && (this.cords.x + this.delta.x - this.radius <= brick.cords.x + brick.dimensions.width)) {
             brick.explode();
             this.game_world.score.score += 10;
-            this.delta.x *= -1;
+            this.delta.y *= -1;
           }
         }
       }
@@ -258,7 +258,7 @@
       brick_width = canvas.width / bricks_per_row;
       this.bricks = [];
       for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
-        for (y = _j = 0; _j < 4; y = ++_j) {
+        for (y = _j = 0; _j < 12; y = ++_j) {
           brick_color = _.shuffle(['orange', 'red', 'green'])[0];
           this.bricks.push(new Brick(new Cords(x, y), brick_width, brick_color));
         }

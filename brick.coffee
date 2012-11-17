@@ -120,7 +120,7 @@ class Ball
                 if (@cords.y + @delta.y - @raidus <= brick.cords.y + brick.dimensions.height) and (@cords.y + @delta.y + @radius >= brick.cords.y)
                     brick.explode()
                     @game_world.score.score += 10
-                    @delta.y *= -1
+                    @delta.x *= -1
                     continue
 
             touching_bottom = false
@@ -138,7 +138,7 @@ class Ball
                 if(@cords.x + @delta.x + @radius >= brick.cords.x) and (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width)
                     brick.explode()
                     @game_world.score.score += 10
-                    @delta.x *= -1
+                    @delta.y *= -1
         
         @cords = new Cords(@cords.x + @delta.x, @cords.y + @delta.y)
 
@@ -169,7 +169,7 @@ class GameWorld
 
         @bricks = []
         for x in [0...bricks_per_row]
-          for y in [0...4]
+          for y in [0...12]
               brick_color = _.shuffle(['orange', 'red','green'])[0]
               @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
     
