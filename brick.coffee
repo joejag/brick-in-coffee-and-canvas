@@ -66,12 +66,11 @@ brick_width = canvas.width/bricks_per_row
 
 paddle = new Paddle
 ball = new Ball
+score = new Score
 bricks = []
 for x in [0...bricks_per_row]
   for y in [0...4]
       bricks.push new Brick(new Cords(x,y), brick_width, _.shuffle(['orange', 'red','green'])[0])
-
-score = new Score
 
 #
 # Draw world

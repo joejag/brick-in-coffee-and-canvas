@@ -121,6 +121,8 @@
 
   ball = new Ball;
 
+  score = new Score;
+
   bricks = [];
 
   for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
@@ -128,8 +130,6 @@
       bricks.push(new Brick(new Cords(x, y), brick_width, _.shuffle(['orange', 'red', 'green'])[0]));
     }
   }
-
-  score = new Score;
 
   animate = function() {
     var brick, _k, _len, _results;
