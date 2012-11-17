@@ -6,6 +6,7 @@ canvas = $('#brick')[0]
 context = canvas.getContext('2d')
 
 drawFilledRectangle = (d) ->
+    context.fillStyle = 'black'
     context.fillRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height)
 
 drawStrokedRectangle = (d) ->
@@ -14,12 +15,13 @@ drawStrokedRectangle = (d) ->
     context.strokeRect(d.cords.x+1,d.cords.y+1, d.dimensions.width - 2, d.dimensions.height - 2)
 
 drawCircle = (d) ->
+    context.fillStyle = 'black'
     context.beginPath()
     context.arc(d.cords.x, d.cords.y, d.radius, 0, Math.PI*2, true)
     context.fill()
 
 drawMenuLine = (d) ->
-    context.fillStyle = 'rgb(50,100,50)'
+    context.fillStyle = 'grey'
     context.font = '20px Times New Roman'
     context.clearRect(0, canvas.height-30, canvas.width, 30)
     context.fillText("Score: #{d.score}", 10, canvas.height-5)
@@ -82,8 +84,14 @@ animate = ->
     score.draw()
     brick.draw() for brick in bricks
 
-animate()
+startGame = ->
+    gameLoop = setInterval(animate, 20)
 
+endGame = ->
+    clearInterval(gameLoop)
+    context.fillText("Game Over!!!", canvas.width/2, canvas.height/2)
+
+startGame()
 
 
 

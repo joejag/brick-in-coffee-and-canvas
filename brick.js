@@ -1,11 +1,12 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, Paddle, Score, animate, ball, brick_width, bricks, bricks_per_row, canvas, context, drawCircle, drawFilledRectangle, drawMenuLine, drawStrokedRectangle, paddle, score, x, y, _i, _j;
+  var Ball, Brick, Cords, Dimensions, Paddle, Score, animate, ball, brick_width, bricks, bricks_per_row, canvas, context, drawCircle, drawFilledRectangle, drawMenuLine, drawStrokedRectangle, endGame, paddle, score, startGame, x, y, _i, _j;
 
   canvas = $('#brick')[0];
 
   context = canvas.getContext('2d');
 
   drawFilledRectangle = function(d) {
+    context.fillStyle = 'black';
     return context.fillRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height);
   };
 
@@ -16,13 +17,14 @@
   };
 
   drawCircle = function(d) {
+    context.fillStyle = 'black';
     context.beginPath();
     context.arc(d.cords.x, d.cords.y, d.radius, 0, Math.PI * 2, true);
     return context.fill();
   };
 
   drawMenuLine = function(d) {
-    context.fillStyle = 'rgb(50,100,50)';
+    context.fillStyle = 'grey';
     context.font = '20px Times New Roman';
     context.clearRect(0, canvas.height - 30, canvas.width, 30);
     return context.fillText("Score: " + d.score, 10, canvas.height - 5);
@@ -144,6 +146,16 @@
     return _results;
   };
 
-  animate();
+  startGame = function() {
+    var gameLoop;
+    return gameLoop = setInterval(animate, 20);
+  };
+
+  endGame = function() {
+    clearInterval(gameLoop);
+    return context.fillText("Game Over!!!", canvas.width / 2, canvas.height / 2);
+  };
+
+  startGame();
 
 }).call(this);
