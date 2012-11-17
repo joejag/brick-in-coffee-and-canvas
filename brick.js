@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, Paddle, Score, animate, ball, brick_width, bricks, bricks_per_row, canvas, context, drawCircle, drawFilledRectangle, drawMenuLine, drawStrokedRectangle, endGame, paddle, score, startGame, x, y, _i, _j;
+  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, ball, brick_width, bricks, bricks_per_row, canvas, clearScreen, context, drawCircle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, paddle, score, x, y, _i, _j;
 
   canvas = $('#brick')[0];
 
@@ -28,6 +28,15 @@
     context.font = '20px Times New Roman';
     context.clearRect(0, canvas.height - 30, canvas.width, 30);
     return context.fillText("Score: " + d.score, 10, canvas.height - 5);
+  };
+
+  drawGameOver = function() {
+    context.fillStyle = 'red';
+    return context.fillText("Game Over!!!", canvas.width / 2 - 70, canvas.height / 2);
+  };
+
+  clearScreen = function() {
+    return context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
   Cords = (function() {
@@ -70,13 +79,25 @@
 
   Ball = (function() {
 
-    function Ball() {
+    function Ball(game_world) {
+      this.game_world = game_world;
       this.cords = new Cords(300, 300);
       this.radius = 10;
+      this.delta = new Cords(-2, -4);
     }
 
     Ball.prototype.draw = function() {
       return drawCircle(this);
+    };
+
+    Ball.prototype.move = function() {
+      if (this.cords.y + this.delta.y - this.radius < 0) {
+        this.delta.y = this.delta.y * -1;
+      }
+      if (this.cords.y + this.delta.y + this.radius > canvas.height) {
+        this.game_world.endGame();
+      }
+      return this.cords = new Cords(this.cords.x + this.delta.x, this.cords.y + this.delta.y);
     };
 
     return Ball;
@@ -115,13 +136,47 @@
 
   })();
 
+  GameWorld = (function() {
+
+    function GameWorld() {}
+
+    GameWorld.prototype.startGame = function() {
+      return this.gameLoop = setInterval(this.animate, 20);
+    };
+
+    GameWorld.prototype.endGame = function() {
+      clearInterval(this.gameLoop);
+      return drawGameOver();
+    };
+
+    GameWorld.prototype.animate = function() {
+      var brick, _i, _len, _results;
+      clearScreen();
+      ball.move();
+      paddle.draw();
+      ball.draw();
+      score.draw();
+      _results = [];
+      for (_i = 0, _len = bricks.length; _i < _len; _i++) {
+        brick = bricks[_i];
+        _results.push(brick.draw());
+      }
+      return _results;
+    };
+
+    return GameWorld;
+
+  })();
+
+  gw = new GameWorld;
+
   bricks_per_row = 8;
 
   brick_width = canvas.width / bricks_per_row;
 
   paddle = new Paddle;
 
-  ball = new Ball;
+  ball = new Ball(gw);
 
   score = new Score;
 
@@ -133,29 +188,6 @@
     }
   }
 
-  animate = function() {
-    var brick, _k, _len, _results;
-    paddle.draw();
-    ball.draw();
-    score.draw();
-    _results = [];
-    for (_k = 0, _len = bricks.length; _k < _len; _k++) {
-      brick = bricks[_k];
-      _results.push(brick.draw());
-    }
-    return _results;
-  };
-
-  startGame = function() {
-    var gameLoop;
-    return gameLoop = setInterval(animate, 20);
-  };
-
-  endGame = function() {
-    clearInterval(gameLoop);
-    return context.fillText("Game Over!!!", canvas.width / 2, canvas.height / 2);
-  };
-
-  startGame();
+  gw.startGame();
 
 }).call(this);
