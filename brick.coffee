@@ -48,8 +48,35 @@ class Paddle
         @cords = new Cords(100, 460)
         @dimensions = new Dimensions(15, 100)
         @delta = new Cords(0, 0)
+        @paddle_speed = 10
+        @set_direction("NONE")
+        @register_key_listeners()
     draw: ->
         drawFilledRectangle(this)
+    register_key_listeners: ->
+        parent = this
+        $(document).keydown (evt) ->
+            parent.set_direction("RIGHT") if evt.keyCode == 39
+            parent.set_direction("LEFT")  if evt.keyCode == 37
+        $(document).keyup (evt) ->
+            parent.set_direction("NONE") if evt.keyCode == 39
+            parent.set_direction("NONE") if evt.keyCode == 37
+    set_direction: (direction) ->
+        @paddle_move = direction
+    move: ->
+        # Set the delta
+        if @paddle_move == 'LEFT'
+            @delta.x  = @paddle_speed * -1
+        else if @paddle_move == 'RIGHT'
+            @delta.x  = @paddle_speed
+        else @delta.x =  0
+
+        # bounds checking for screen sides
+        if @cords.x + @delta.x < 0 or @cords.x + @delta.x + @dimensions.width > canvas.width
+            @delta.x = 0
+
+        console.log @paddle_move
+        @cords.x += @delta.x
 
 class Ball
     constructor: (@game_world) ->
@@ -108,11 +135,12 @@ class GameWorld
         clearScreen()
 
         @ball.move()
+        @paddle.move()
 
         @paddle.draw()
         @ball.draw()
         @score.draw()
-        brick.draw() for brick in @bricks
+#        brick.draw() for brick in @bricks
 
 #
 # Start world

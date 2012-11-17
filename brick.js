@@ -67,10 +67,53 @@
       this.cords = new Cords(100, 460);
       this.dimensions = new Dimensions(15, 100);
       this.delta = new Cords(0, 0);
+      this.paddle_speed = 10;
+      this.set_direction("NONE");
+      this.register_key_listeners();
     }
 
     Paddle.prototype.draw = function() {
       return drawFilledRectangle(this);
+    };
+
+    Paddle.prototype.register_key_listeners = function() {
+      var parent;
+      parent = this;
+      $(document).keydown(function(evt) {
+        if (evt.keyCode === 39) {
+          parent.set_direction("RIGHT");
+        }
+        if (evt.keyCode === 37) {
+          return parent.set_direction("LEFT");
+        }
+      });
+      return $(document).keyup(function(evt) {
+        if (evt.keyCode === 39) {
+          parent.set_direction("NONE");
+        }
+        if (evt.keyCode === 37) {
+          return parent.set_direction("NONE");
+        }
+      });
+    };
+
+    Paddle.prototype.set_direction = function(direction) {
+      return this.paddle_move = direction;
+    };
+
+    Paddle.prototype.move = function() {
+      if (this.paddle_move === 'LEFT') {
+        this.delta.x = this.paddle_speed * -1;
+      } else if (this.paddle_move === 'RIGHT') {
+        this.delta.x = this.paddle_speed;
+      } else {
+        this.delta.x = 0;
+      }
+      if (this.cords.x + this.delta.x < 0 || this.cords.x + this.delta.x + this.dimensions.width > canvas.width) {
+        this.delta.x = 0;
+      }
+      console.log(this.paddle_move);
+      return this.cords.x += this.delta.x;
     };
 
     return Paddle;
@@ -167,19 +210,12 @@
     };
 
     GameWorld.prototype.animate = function() {
-      var brick, _i, _len, _ref, _results;
       clearScreen();
       this.ball.move();
+      this.paddle.move();
       this.paddle.draw();
       this.ball.draw();
-      this.score.draw();
-      _ref = this.bricks;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        brick = _ref[_i];
-        _results.push(brick.draw());
-      }
-      return _results;
+      return this.score.draw();
     };
 
     return GameWorld;
