@@ -179,7 +179,7 @@ class GameWorld
 
         @bricks = []
         for x in [0...bricks_per_row]
-          for y in [0...1]
+          for y in [0...12]
               brick_color = _.shuffle(['orange', 'red','green'])[0]
               @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
     

@@ -273,7 +273,7 @@
       brick_width = canvas.width / bricks_per_row;
       this.bricks = [];
       for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
-        for (y = _j = 0; _j < 1; y = ++_j) {
+        for (y = _j = 0; _j < 12; y = ++_j) {
           brick_color = _.shuffle(['orange', 'red', 'green'])[0];
           this.bricks.push(new Brick(new Cords(x, y), brick_width, brick_color));
         }
