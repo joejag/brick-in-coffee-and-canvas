@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, Paddle, ball, brick, brick_width, bricks, bricks_per_row, canvas, context, drawArc, drawFilledRectangle, drawMenuLine, drawStrokedRectangle, paddle, score, x, y, _i, _j, _k, _len;
+  var Ball, Brick, Cords, Dimensions, Paddle, Score, animate, ball, brick_width, bricks, bricks_per_row, canvas, context, drawCircle, drawFilledRectangle, drawMenuLine, drawStrokedRectangle, paddle, score, x, y, _i, _j;
 
   canvas = $('#brick')[0];
 
@@ -15,17 +15,17 @@
     return context.strokeRect(d.cords.x + 1, d.cords.y + 1, d.dimensions.width - 2, d.dimensions.height - 2);
   };
 
-  drawArc = function(drawable) {
+  drawCircle = function(d) {
     context.beginPath();
-    context.arc(drawable.cords.x, drawable.cords.y, drawable.radius, 0, Math.PI * 2, true);
+    context.arc(d.cords.x, d.cords.y, d.radius, 0, Math.PI * 2, true);
     return context.fill();
   };
 
-  drawMenuLine = function(score) {
+  drawMenuLine = function(d) {
     context.fillStyle = 'rgb(50,100,50)';
     context.font = '20px Times New Roman';
     context.clearRect(0, canvas.height - 30, canvas.width, 30);
-    return context.fillText("Score: " + score, 10, canvas.height - 5);
+    return context.fillText("Score: " + d.score, 10, canvas.height - 5);
   };
 
   Cords = (function() {
@@ -52,13 +52,15 @@
 
   Paddle = (function() {
 
-    function Paddle() {}
+    function Paddle() {
+      this.cords = new Cords(100, 460);
+      this.dimensions = new Dimensions(15, 100);
+      this.delta = new Cords(0, 0);
+    }
 
-    Paddle.prototype.cords = new Cords(100, 460);
-
-    Paddle.prototype.dimensions = new Dimensions(15, 100);
-
-    Paddle.prototype.delta = new Cords(0, 0);
+    Paddle.prototype.draw = function() {
+      return drawFilledRectangle(this);
+    };
 
     return Paddle;
 
@@ -66,11 +68,14 @@
 
   Ball = (function() {
 
-    function Ball() {}
+    function Ball() {
+      this.cords = new Cords(300, 300);
+      this.radius = 10;
+    }
 
-    Ball.prototype.cords = new Cords(300, 300);
-
-    Ball.prototype.radius = 10;
+    Ball.prototype.draw = function() {
+      return drawCircle(this);
+    };
 
     return Ball;
 
@@ -86,7 +91,25 @@
       this.cords = new Cords(this.base_cords.x * this.dimensions.width, this.base_cords.y * this.dimensions.height);
     }
 
+    Brick.prototype.draw = function() {
+      return drawStrokedRectangle(this);
+    };
+
     return Brick;
+
+  })();
+
+  Score = (function() {
+
+    function Score() {}
+
+    Score.prototype.score = 0;
+
+    Score.prototype.draw = function() {
+      return drawMenuLine(this);
+    };
+
+    return Score;
 
   })();
 
@@ -106,17 +129,21 @@
     }
   }
 
-  score = 0;
+  score = new Score;
 
-  drawFilledRectangle(paddle);
+  animate = function() {
+    var brick, _k, _len, _results;
+    paddle.draw();
+    ball.draw();
+    score.draw();
+    _results = [];
+    for (_k = 0, _len = bricks.length; _k < _len; _k++) {
+      brick = bricks[_k];
+      _results.push(brick.draw());
+    }
+    return _results;
+  };
 
-  drawArc(ball);
-
-  for (_k = 0, _len = bricks.length; _k < _len; _k++) {
-    brick = bricks[_k];
-    drawStrokedRectangle(brick);
-  }
-
-  drawMenuLine(score);
+  animate();
 
 }).call(this);
