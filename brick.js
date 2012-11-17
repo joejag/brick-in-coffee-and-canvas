@@ -92,7 +92,10 @@
 
     Ball.prototype.move = function() {
       if (this.cords.y + this.delta.y - this.radius < 0) {
-        this.delta.y = this.delta.y * -1;
+        this.delta.y *= -1;
+      }
+      if (this.cords.x + this.delta.x - this.radius < 0 || this.cords.x + this.delta.x + this.radius > canvas.width) {
+        this.delta.x *= -1;
       }
       if (this.cords.y + this.delta.y + this.radius > canvas.height) {
         this.game_world.endGame();

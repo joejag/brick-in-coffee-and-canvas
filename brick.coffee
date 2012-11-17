@@ -60,7 +60,11 @@ class Ball
     move: ->
         # hits top of screen, move downwards
         if @cords.y + @delta.y - @radius < 0
-            @delta.y = @delta.y * -1
+            @delta.y *= -1
+
+        # hits side of wall, reverse X direction
+        if @cords.x + @delta.x - @radius < 0 or @cords.x + @delta.x + @radius > canvas.width
+            @delta.x *= -1
         
         # hits bottom of screen, then end game
         if @cords.y + @delta.y + @radius > canvas.height
