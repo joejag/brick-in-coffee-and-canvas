@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, looper;
+  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, end, gw, looper;
 
   canvas = $('#brick')[0];
 
@@ -112,7 +112,6 @@
       if (this.cords.x + this.delta.x < 0 || this.cords.x + this.delta.x + this.dimensions.width > canvas.width) {
         this.delta.x = 0;
       }
-      console.log(this.paddle_move);
       return this.cords.x += this.delta.x;
     };
 
@@ -207,16 +206,15 @@
       }
     }
 
-    GameWorld.prototype.startGame = function() {
-      return setInterval(looper, 20);
-    };
-
     GameWorld.prototype.endGame = function() {
-      clearInterval(looper);
-      return drawGameOver();
+      drawGameOver();
+      return this.ended = true;
     };
 
     GameWorld.prototype.animate = function() {
+      if (this.ended) {
+        return;
+      }
       clearScreen();
       this.ball.move();
       this.paddle.move();
@@ -235,6 +233,11 @@
     return gw.animate();
   };
 
-  gw.startGame();
+  setInterval(looper, 20);
+
+  end = function() {
+    console.log("clearing interval");
+    return clearInterval(looper);
+  };
 
 }).call(this);

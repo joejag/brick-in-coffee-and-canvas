@@ -75,7 +75,6 @@ class Paddle
         if @cords.x + @delta.x < 0 or @cords.x + @delta.x + @dimensions.width > canvas.width
             @delta.x = 0
 
-        console.log @paddle_move
         @cords.x += @delta.x
 
 class Ball
@@ -132,14 +131,12 @@ class GameWorld
               brick_color = _.shuffle(['orange', 'red','green'])[0]
               @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
     
-    startGame: ->
-        setInterval(looper, 20)
-
     endGame: ->
-        clearInterval(looper)
         drawGameOver()
+        @ended = true
 
     animate: () ->
+        return if @ended
         clearScreen()
 
         @ball.move()
@@ -159,7 +156,11 @@ gw = new GameWorld
 looper = ->
     gw.animate()
 
-gw.startGame()
+setInterval(looper, 20)
+
+end = ->
+    console.log "clearing interval"
+    clearInterval(looper)
 
 
 
