@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, looper;
+  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawClearedRectnagle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, looper;
 
   canvas = $('#brick')[0];
 
@@ -8,6 +8,10 @@
   drawFilledRectangle = function(d) {
     context.fillStyle = 'black';
     return context.fillRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height);
+  };
+
+  drawClearedRectnagle = function(d) {
+    return context.clearRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height);
   };
 
   drawStrokedRectangle = function(d) {
@@ -133,7 +137,7 @@
     };
 
     Ball.prototype.move = function() {
-      var p;
+      var ball_y_cur_top, ball_y_top, brick, brick_y_bottom, p, touching_bottom, touching_left, touching_right, touching_top, _i, _len, _ref;
       if (this.cords.y + this.delta.y - this.radius < 0) {
         this.delta.y *= -1;
       }
@@ -148,6 +152,47 @@
         if (this.cords.x + this.delta.x >= p.cords.x && this.cords.x + this.delta.x <= p.cords.x + p.dimensions.width) {
           if (this.delta.y > 0) {
             this.delta.y *= -1;
+          }
+        }
+      }
+      _ref = this.game_world.bricks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        brick = _ref[_i];
+        if (brick.dead) {
+          continue;
+        }
+        touching_left = false;
+        touching_right = false;
+        if ((this.cords.x + this.delta.x + this.radius >= brick.cords.x) && (this.cords.x + this.radius <= brick.cords.x)) {
+          touching_left = true;
+        }
+        if ((this.cords.x + this.delta.x - this.radius <= brick.cords.x + brick.dimensions.width) && (this.cords.x - this.radius >= brick.cords.x + brick.dimensions.width)) {
+          touching_right = true;
+        }
+        if (touching_left || touching_right) {
+          if ((this.cords.y + this.delta.y - this.raidus <= brick.cords.y + brick.dimensions.height) && (this.cords.y + this.delta.y + this.radius >= brick.cords.y)) {
+            brick.explode();
+            this.game_world.score.score += 10;
+            this.delta.y *= -1;
+            continue;
+          }
+        }
+        touching_bottom = false;
+        touching_top = false;
+        ball_y_top = this.cords.y + this.delta.y - this.radius;
+        ball_y_cur_top = this.cords.y - this.radius;
+        brick_y_bottom = brick.cords.y + brick.dimensions.height;
+        if ((ball_y_top <= brick_y_bottom) && (ball_y_cur_top >= brick_y_bottom)) {
+          touching_bottom = true;
+        }
+        if ((this.cords.y + this.delta.y + this.radius >= brick.cords.y) && (this.cords.y + this.radius <= brick.cords.y)) {
+          touching_top = true;
+        }
+        if (touching_bottom || touching_top) {
+          if ((this.cords.x + this.delta.x + this.radius >= brick.cords.x) && (this.cords.x + this.delta.x - this.radius <= brick.cords.x + brick.dimensions.width)) {
+            brick.explode();
+            this.game_world.score.score += 10;
+            this.delta.x *= -1;
           }
         }
       }
@@ -166,10 +211,22 @@
       this.color = color;
       this.dimensions = new Dimensions(20, this.width);
       this.cords = new Cords(this.base_cords.x * this.dimensions.width, this.base_cords.y * this.dimensions.height);
+      this.dead = false;
     }
 
     Brick.prototype.draw = function() {
-      return drawStrokedRectangle(this);
+      if (!this.dead) {
+        return drawStrokedRectangle(this);
+      }
+    };
+
+    Brick.prototype.explode = function() {
+      this.dead = true;
+      return drawClearedRectnagle(this);
+    };
+
+    Brick.prototype.alive = function() {
+      return this.dead;
     };
 
     return Brick;
@@ -219,12 +276,20 @@
     };
 
     GameWorld.prototype.animate = function() {
+      var brick, _i, _len, _ref, _results;
       clearScreen();
       this.ball.move();
       this.paddle.move();
       this.paddle.draw();
       this.ball.draw();
-      return this.score.draw();
+      this.score.draw();
+      _ref = this.bricks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        brick = _ref[_i];
+        _results.push(brick.draw());
+      }
+      return _results;
     };
 
     return GameWorld;

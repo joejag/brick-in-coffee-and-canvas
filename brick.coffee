@@ -9,6 +9,9 @@ drawFilledRectangle = (d) ->
     context.fillStyle = 'black'
     context.fillRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height)
 
+drawClearedRectnagle = (d) ->
+    context.clearRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height)
+
 drawStrokedRectangle = (d) ->
     context.fillStyle = d.color
     context.fillRect(d.cords.x, d.cords.y, d.dimensions.width, d.dimensions.height)
@@ -104,13 +107,52 @@ class Ball
             if @cords.x + @delta.x >= p.cords.x and @cords.x + @delta.x <= p.cords.x + p.dimensions.width
                 @delta.y *= -1 if @delta.y > 0
 
+        # hits brick
+        for brick in @game_world.bricks
+            continue if brick.dead
+            touching_left = false
+            touching_right = false
+            if (@cords.x + @delta.x + @radius >= brick.cords.x) and (@cords.x + @radius <= brick.cords.x)
+                touching_left = true
+            if (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width) and (@cords.x - @radius >= brick.cords.x + brick.dimensions.width)
+                touching_right = true
+            if touching_left or touching_right
+                if (@cords.y + @delta.y - @raidus <= brick.cords.y + brick.dimensions.height) and (@cords.y + @delta.y + @radius >= brick.cords.y)
+                    brick.explode()
+                    @game_world.score.score += 10
+                    @delta.y *= -1
+                    continue
+
+            touching_bottom = false
+            touching_top = false
+
+            ball_y_top = @cords.y + @delta.y - @radius
+            ball_y_cur_top = @cords.y - @radius
+            brick_y_bottom = brick.cords.y + brick.dimensions.height
+
+            if (ball_y_top <= brick_y_bottom) and (ball_y_cur_top >= brick_y_bottom)
+                touching_bottom = true
+            if(@cords.y + @delta.y + @radius >= brick.cords.y) and (@cords.y + @radius <= brick.cords.y)
+                touching_top = true
+            if touching_bottom or touching_top
+                if(@cords.x + @delta.x + @radius >= brick.cords.x) and (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width)
+                    brick.explode()
+                    @game_world.score.score += 10
+                    @delta.x *= -1
+        
         @cords = new Cords(@cords.x + @delta.x, @cords.y + @delta.y)
 
 class Brick
     constructor: (@base_cords, @width, @color) ->
         @dimensions = new Dimensions(20, @width)
         @cords = new Cords(@base_cords.x * @dimensions.width, @base_cords.y * @dimensions.height)
-    draw: -> drawStrokedRectangle(this)
+        @dead = false
+    draw: ->
+        drawStrokedRectangle(this) unless @dead
+    explode: ->
+        @dead = true
+        drawClearedRectnagle(this)
+    alive: -> @dead
 
 class Score
     score: 0
@@ -148,7 +190,7 @@ class GameWorld
         @paddle.draw()
         @ball.draw()
         @score.draw()
-#        brick.draw() for brick in @bricks
+        brick.draw() for brick in @bricks
 
 #
 # Start world
