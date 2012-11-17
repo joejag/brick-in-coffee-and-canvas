@@ -97,6 +97,14 @@ class Ball
         if @cords.y + @delta.y + @radius > canvas.height
             @game_world.endGame()
 
+        # hits paddle
+        # is inline with paddle Y
+        p = @game_world.paddle
+        if @cords.y + @delta.y + @radius >= p.cords.y
+            # is positioned within the paddle
+            if @cords.x + @delta.x >= p.cords.x and @cords.x + @delta.x <= p.cords.x + p.dimensions.width
+                @delta.y *= -1
+
         @cords = new Cords(@cords.x + @delta.x, @cords.y + @delta.y)
 
 class Brick
