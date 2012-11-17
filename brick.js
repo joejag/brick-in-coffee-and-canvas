@@ -151,7 +151,7 @@
     };
 
     Ball.prototype.move = function() {
-      var brick, brick_bottom, brick_left, brick_right, brick_top, moves, p, touching_bottom, touching_left, touching_right, touching_top, _i, _len, _ref;
+      var brick, brick_bottom, brick_left, brick_right, brick_top, hit_brick_x, hit_brick_y, moves, p, touching_bottom, touching_left, touching_right, touching_top, _i, _len, _ref;
       moves = this.movement();
       if (moves.top < 0) {
         this.delta.y *= -1;
@@ -170,44 +170,39 @@
           }
         }
       }
+      hit_brick_x = false;
+      hit_brick_y = false;
       _ref = this.game_world.bricks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         brick = _ref[_i];
         if (brick.dead) {
           continue;
         }
+        if (hit_brick_x && hit_brick_y) {
+          continue;
+        }
         brick_bottom = brick.cords.y + brick.dimensions.height;
         brick_top = brick.cords.y;
         brick_left = brick.cords.x;
         brick_right = brick.cords.x + brick.dimensions.width;
-        touching_left = false;
-        touching_right = false;
-        if ((moves.right >= brick_left) && (this.cords.x + this.radius <= brick_left)) {
-          touching_left = true;
-        }
-        if ((moves.left <= brick_right) && (this.cords.x - this.radius >= brick_right)) {
-          touching_right = true;
-        }
+        touching_left = (moves.right >= brick_left) && (this.cords.x + this.radius <= brick_left);
+        touching_right = (moves.left <= brick_right) && (this.cords.x - this.radius >= brick_right);
         if (touching_left || touching_right) {
           if ((moves.top <= brick_bottom) && (moves.bottom >= brick_top)) {
             brick.explode();
             this.game_world.score.score += 10;
             this.delta.x *= -1;
+            hit_brick_x = true;
           }
         }
-        touching_bottom = false;
-        touching_top = false;
-        if ((moves.top <= brick_bottom) && (this.cords.y - this.radius >= brick_bottom)) {
-          touching_bottom = true;
-        }
-        if ((moves.bottom >= brick_top) && (this.cords.y + this.radius <= brick_top)) {
-          touching_top = true;
-        }
+        touching_bottom = (moves.top <= brick_bottom) && (this.cords.y - this.radius >= brick_bottom);
+        touching_top = (moves.bottom >= brick_top) && (this.cords.y + this.radius <= brick_top);
         if (touching_bottom || touching_top) {
           if ((moves.right >= brick_left) && (moves.left <= brick_right)) {
             brick.explode();
             this.game_world.score.score += 10;
             this.delta.y *= -1;
+            hit_brick_y = true;
           }
         }
       }
@@ -273,7 +268,7 @@
       brick_width = canvas.width / bricks_per_row;
       this.bricks = [];
       for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
-        for (y = _j = 0; _j < 12; y = ++_j) {
+        for (y = _j = 0; _j < 11; y = ++_j) {
           brick_color = _.shuffle(['orange', 'red', 'green'])[0];
           this.bricks.push(new Brick(new Cords(x, y), brick_width, brick_color));
         }

@@ -118,37 +118,34 @@ class Ball
                 @delta.y *= -1 if @delta.y > 0
 
         # hits brick
+        hit_brick_x = false
+        hit_brick_y = false
         for brick in @game_world.bricks
             continue if brick.dead
+            continue if hit_brick_x and hit_brick_y
 
             brick_bottom = brick.cords.y + brick.dimensions.height
             brick_top = brick.cords.y
             brick_left = brick.cords.x
             brick_right = brick.cords.x + brick.dimensions.width
 
-            touching_left = false
-            touching_right = false
-            if (moves.right >= brick_left) and (@cords.x + @radius <= brick_left)
-                touching_left = true
-            if (moves.left <= brick_right) and (@cords.x - @radius >= brick_right)
-                touching_right = true
+            touching_left = (moves.right >= brick_left) and (@cords.x + @radius <= brick_left)
+            touching_right = (moves.left <= brick_right) and (@cords.x - @radius >= brick_right)
             if touching_left or touching_right
                 if (moves.top <= brick_bottom) and (moves.bottom >= brick_top)
                     brick.explode()
                     @game_world.score.score += 10
                     @delta.x *= -1
+                    hit_brick_x = true
 
-            touching_bottom = false
-            touching_top = false
-            if (moves.top <= brick_bottom) and (@cords.y - @radius >= brick_bottom)
-                touching_bottom = true
-            if(moves.bottom >= brick_top) and (@cords.y + @radius <= brick_top)
-                touching_top = true
+            touching_bottom = (moves.top <= brick_bottom) and (@cords.y - @radius >= brick_bottom)
+            touching_top = (moves.bottom >= brick_top) and (@cords.y + @radius <= brick_top)
             if touching_bottom or touching_top
                 if(moves.right >= brick_left) and (moves.left <= brick_right)
                     brick.explode()
                     @game_world.score.score += 10
                     @delta.y *= -1
+                    hit_brick_y = true
         
         @cords = new Cords(@cords.x + @delta.x, @cords.y + @delta.y)
 
@@ -179,7 +176,7 @@ class GameWorld
 
         @bricks = []
         for x in [0...bricks_per_row]
-          for y in [0...12]
+          for y in [0...11]
               brick_color = _.shuffle(['orange', 'red','green'])[0]
               @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
     
