@@ -33,6 +33,10 @@ drawGameOver = ->
     context.fillStyle = 'red'
     context.fillText("Game Over!!!", canvas.width/2-70, canvas.height/2)
 
+drawGameOverWin = ->
+    context.fillStyle = 'green'
+    context.fillText("You win!!!", canvas.width/2-70, canvas.height/2)
+
 clearScreen = ->
     context.clearRect(0,0,canvas.width, canvas.height)
 
@@ -136,8 +140,6 @@ class Ball
 
             touching_bottom = false
             touching_top = false
-
-
             if (moves.top <= brick_bottom) and (@cords.y - @radius >= brick_bottom)
                 touching_bottom = true
             if(moves.bottom >= brick_top) and (@cords.y + @radius <= brick_top)
@@ -177,7 +179,7 @@ class GameWorld
 
         @bricks = []
         for x in [0...bricks_per_row]
-          for y in [0...12]
+          for y in [0...1]
               brick_color = _.shuffle(['orange', 'red','green'])[0]
               @bricks.push new Brick(new Cords(x,y), brick_width, brick_color)
     
@@ -194,6 +196,9 @@ class GameWorld
 
         @ball.move()
         @paddle.move()
+        if _.filter(@bricks, (brick) -> brick.dead).length == @bricks.length
+            clearInterval(@game_loop)
+            drawGameOverWin()
 
         @paddle.draw()
         @ball.draw()

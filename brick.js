@@ -1,5 +1,5 @@
 (function() {
-  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawClearedRectnagle, drawFilledRectangle, drawGameOver, drawMenuLine, drawStrokedRectangle, gw, looper;
+  var Ball, Brick, Cords, Dimensions, GameWorld, Paddle, Score, canvas, clearScreen, context, drawCircle, drawClearedRectnagle, drawFilledRectangle, drawGameOver, drawGameOverWin, drawMenuLine, drawStrokedRectangle, gw, looper;
 
   canvas = $('#brick')[0];
 
@@ -37,6 +37,11 @@
   drawGameOver = function() {
     context.fillStyle = 'red';
     return context.fillText("Game Over!!!", canvas.width / 2 - 70, canvas.height / 2);
+  };
+
+  drawGameOverWin = function() {
+    context.fillStyle = 'green';
+    return context.fillText("You win!!!", canvas.width / 2 - 70, canvas.height / 2);
   };
 
   clearScreen = function() {
@@ -268,7 +273,7 @@
       brick_width = canvas.width / bricks_per_row;
       this.bricks = [];
       for (x = _i = 0; 0 <= bricks_per_row ? _i < bricks_per_row : _i > bricks_per_row; x = 0 <= bricks_per_row ? ++_i : --_i) {
-        for (y = _j = 0; _j < 12; y = ++_j) {
+        for (y = _j = 0; _j < 1; y = ++_j) {
           brick_color = _.shuffle(['orange', 'red', 'green'])[0];
           this.bricks.push(new Brick(new Cords(x, y), brick_width, brick_color));
         }
@@ -290,6 +295,12 @@
       clearScreen();
       this.ball.move();
       this.paddle.move();
+      if (_.filter(this.bricks, function(brick) {
+        return brick.dead;
+      }).length === this.bricks.length) {
+        clearInterval(this.game_loop);
+        drawGameOverWin();
+      }
       this.paddle.draw();
       this.ball.draw();
       this.score.draw();
