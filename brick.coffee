@@ -107,7 +107,7 @@ class Ball
         
         # hits bottom of screen, then end game
         if moves.bottom > canvas.height
-            @game_world.endGame()
+            @game_world.endGame(false)
 
         # hits paddle
         # is inline with paddle Y
@@ -187,9 +187,12 @@ class GameWorld
         console.log looper
         @game_loop = setInterval(looper, 20)
 
-    endGame: ->
+    endGame:(win) ->
         clearInterval(@game_loop)
-        drawGameOver()
+        if win
+            drawGameOverWin()
+        else
+            drawGameOver()
 
     animate: () ->
         clearScreen()
@@ -197,8 +200,7 @@ class GameWorld
         @ball.move()
         @paddle.move()
         if _.filter(@bricks, (brick) -> brick.dead).length == @bricks.length
-            clearInterval(@game_loop)
-            drawGameOverWin()
+            @endGame(true)
 
         @paddle.draw()
         @ball.draw()

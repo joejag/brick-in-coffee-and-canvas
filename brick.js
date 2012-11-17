@@ -160,7 +160,7 @@
         this.delta.x *= -1;
       }
       if (moves.bottom > canvas.height) {
-        this.game_world.endGame();
+        this.game_world.endGame(false);
       }
       p = this.game_world.paddle;
       if (moves.bottom >= p.cords.y) {
@@ -285,9 +285,13 @@
       return this.game_loop = setInterval(looper, 20);
     };
 
-    GameWorld.prototype.endGame = function() {
+    GameWorld.prototype.endGame = function(win) {
       clearInterval(this.game_loop);
-      return drawGameOver();
+      if (win) {
+        return drawGameOverWin();
+      } else {
+        return drawGameOver();
+      }
     };
 
     GameWorld.prototype.animate = function() {
@@ -298,8 +302,7 @@
       if (_.filter(this.bricks, function(brick) {
         return brick.dead;
       }).length === this.bricks.length) {
-        clearInterval(this.game_loop);
-        drawGameOverWin();
+        this.endGame(true);
       }
       this.paddle.draw();
       this.ball.draw();
