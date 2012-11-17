@@ -84,7 +84,7 @@ class Ball
     constructor: (@game_world) ->
         @cords = new Cords(300, 300)
         @radius = 10
-        @delta = new Cords(-2, -4)
+        @delta = new Cords(-3, -6)
     draw: -> drawCircle(this)
     movement: ->
         {top: @cords.y + @delta.y - @radius,
@@ -116,32 +116,34 @@ class Ball
         # hits brick
         for brick in @game_world.bricks
             continue if brick.dead
+
+            brick_bottom = brick.cords.y + brick.dimensions.height
+            brick_top = brick.cords.y
+            brick_left = brick.cords.x
+            brick_right = brick.cords.x + brick.dimensions.width
+
             touching_left = false
             touching_right = false
-            if (@cords.x + @delta.x + @radius >= brick.cords.x) and (@cords.x + @radius <= brick.cords.x)
+            if (moves.right >= brick_left) and (@cords.x + @radius <= brick_left)
                 touching_left = true
-            if (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width) and (@cords.x - @radius >= brick.cords.x + brick.dimensions.width)
+            if (moves.left <= brick_right) and (@cords.x - @radius >= brick_right)
                 touching_right = true
             if touching_left or touching_right
-                if (@cords.y + @delta.y - @raidus <= brick.cords.y + brick.dimensions.height) and (moves.bottom >= brick.cords.y)
-                    debugger
+                if (moves.top <= brick_bottom) and (moves.bottom >= brick_top)
                     brick.explode()
                     @game_world.score.score += 10
                     @delta.x *= -1
-                    continue
 
             touching_bottom = false
             touching_top = false
 
-            ball_y_cur_top = @cords.y - @radius
-            brick_y_bottom = brick.cords.y + brick.dimensions.height
 
-            if (moves.top <= brick_y_bottom) and (ball_y_cur_top >= brick_y_bottom)
+            if (moves.top <= brick_bottom) and (@cords.y - @radius >= brick_bottom)
                 touching_bottom = true
-            if(moves.bottom >= brick.cords.y) and (@cords.y + @radius <= brick.cords.y)
+            if(moves.bottom >= brick_top) and (@cords.y + @radius <= brick_top)
                 touching_top = true
             if touching_bottom or touching_top
-                if(@cords.x + @delta.x + @radius >= brick.cords.x) and (@cords.x + @delta.x - @radius <= brick.cords.x + brick.dimensions.width)
+                if(moves.right >= brick_left) and (moves.left <= brick_right)
                     brick.explode()
                     @game_world.score.score += 10
                     @delta.y *= -1

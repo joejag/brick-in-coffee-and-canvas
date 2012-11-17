@@ -129,7 +129,7 @@
       this.game_world = game_world;
       this.cords = new Cords(300, 300);
       this.radius = 10;
-      this.delta = new Cords(-2, -4);
+      this.delta = new Cords(-3, -6);
     }
 
     Ball.prototype.draw = function() {
@@ -146,7 +146,7 @@
     };
 
     Ball.prototype.move = function() {
-      var ball_y_cur_top, brick, brick_y_bottom, moves, p, touching_bottom, touching_left, touching_right, touching_top, _i, _len, _ref;
+      var brick, brick_bottom, brick_left, brick_right, brick_top, moves, p, touching_bottom, touching_left, touching_right, touching_top, _i, _len, _ref;
       moves = this.movement();
       if (moves.top < 0) {
         this.delta.y *= -1;
@@ -171,35 +171,35 @@
         if (brick.dead) {
           continue;
         }
+        brick_bottom = brick.cords.y + brick.dimensions.height;
+        brick_top = brick.cords.y;
+        brick_left = brick.cords.x;
+        brick_right = brick.cords.x + brick.dimensions.width;
         touching_left = false;
         touching_right = false;
-        if ((this.cords.x + this.delta.x + this.radius >= brick.cords.x) && (this.cords.x + this.radius <= brick.cords.x)) {
+        if ((moves.right >= brick_left) && (this.cords.x + this.radius <= brick_left)) {
           touching_left = true;
         }
-        if ((this.cords.x + this.delta.x - this.radius <= brick.cords.x + brick.dimensions.width) && (this.cords.x - this.radius >= brick.cords.x + brick.dimensions.width)) {
+        if ((moves.left <= brick_right) && (this.cords.x - this.radius >= brick_right)) {
           touching_right = true;
         }
         if (touching_left || touching_right) {
-          if ((this.cords.y + this.delta.y - this.raidus <= brick.cords.y + brick.dimensions.height) && (moves.bottom >= brick.cords.y)) {
-            debugger;
+          if ((moves.top <= brick_bottom) && (moves.bottom >= brick_top)) {
             brick.explode();
             this.game_world.score.score += 10;
             this.delta.x *= -1;
-            continue;
           }
         }
         touching_bottom = false;
         touching_top = false;
-        ball_y_cur_top = this.cords.y - this.radius;
-        brick_y_bottom = brick.cords.y + brick.dimensions.height;
-        if ((moves.top <= brick_y_bottom) && (ball_y_cur_top >= brick_y_bottom)) {
+        if ((moves.top <= brick_bottom) && (this.cords.y - this.radius >= brick_bottom)) {
           touching_bottom = true;
         }
-        if ((moves.bottom >= brick.cords.y) && (this.cords.y + this.radius <= brick.cords.y)) {
+        if ((moves.bottom >= brick_top) && (this.cords.y + this.radius <= brick_top)) {
           touching_top = true;
         }
         if (touching_bottom || touching_top) {
-          if ((this.cords.x + this.delta.x + this.radius >= brick.cords.x) && (this.cords.x + this.delta.x - this.radius <= brick.cords.x + brick.dimensions.width)) {
+          if ((moves.right >= brick_left) && (moves.left <= brick_right)) {
             brick.explode();
             this.game_world.score.score += 10;
             this.delta.y *= -1;
